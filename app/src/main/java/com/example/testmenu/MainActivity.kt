@@ -16,7 +16,12 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.content_main.*
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.error
+import org.jetbrains.anko.info
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,13 +29,16 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.IOException
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     private val sharedPrefFile = "testsharedpref"
 
     var sharedPref: SharedPreferences? = null
+
+    val items = Array<AndVersion>(6, {AndVersion("toto")})
+    private val url = "http://mobile-courses-server.herokuapp.com/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,20 +89,31 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(it, "Bien remis à zéro", Snackbar.LENGTH_LONG).show()
         })
 
-        val outputUser = findViewById<TextView>(R.id.text_users)
+        andVersionRecyclerView.layoutManager = LinearLayoutManager(this)
+        andVersionRecyclerView.adapter = AndVersionAdapter(items)
+        var nameArray = resources.getStringArray(R.array.andVersionName)
+        for (i in 0..(nameArray.size-1)) {
+            items[i] = AndVersion(nameArray[i])
+        }
+
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://randomuser.me/api/")
+            .baseUrl(url)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
-        val service = retrofit.create(UserApi::class.java)
-        val userRequest = service.getUser()
-        userRequest.enqueue(object : Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                val allUser = response.body()
-                outputUser.setText("${allUser.toString()}")
+        val service = retrofit.create(CoursesService::class.java)
+        val courseRequest = service.listCourses()
+        courseRequest.enqueue(object : Callback<List<Course>> {
+            override fun onResponse(call: Call<List<Course>>, response: Response<List<Course>>) {
+                val allCourse = response.body()
+                if (allCourse != null) {
+                    info{"HERE is ALL COURSES FROM HEROKU SERVER:"}
+                    for (c in allCourse)
+                        info{" one course : ${c.title} : ${c.time} "}
+
+                }
             }
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                error("ça marche pas !")
+            override fun onFailure(call: Call<List<Course>>, t: Throwable) {
+                error{t}
             }
         })
 
@@ -107,6 +126,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+
 
     }
 

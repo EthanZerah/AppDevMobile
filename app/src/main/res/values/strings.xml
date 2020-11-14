@@ -8,4 +8,12 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Jeu</string>
+    <string-array name="andVersionName">
+        <item>Salut, </item>
+        <item>Je </item>
+        <item>suis </item>
+        <item>une </item>
+        <item>liste </item>
+        <item>d\'éléments</item>
+    </string-array>
 </resources>
