@@ -1,5 +1,11 @@
 # Documentation AndroidClicker
 
+## Membres du groupes
+
+Ethan ZERAH, Enzo Lemarchand,
+
+## Explications
+
 Comme le nom l'indique, le principe de cette application est d'atteindre le plus grand nombre possible de clic sur le bouton. En appuyant sur le bouton bonus, au prix de 50 points, nous gagnons un bonus qui nous permet d'obtenir des points plus vite.
 Le bouton reset sert à remettre les points à 0 et le bonus à 1
 
